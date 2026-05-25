@@ -132,18 +132,18 @@ body::after{
 
 .tc-city{
   font-family:var(--serif);font-style:italic;
-  font-size:22px;letter-spacing:-.01em;
+  font-size:16px;letter-spacing:-.01em;
   color:var(--white);opacity:.7;
-  margin-bottom:8px;
+  margin-bottom:4px;
 }
 
 .tc-clock{
   font-family:var(--sans);font-weight:700;
-  line-height:1;letter-spacing:-.01em;
-  margin-bottom:6px;
+  line-height:.9;letter-spacing:-.02em;
+  margin-bottom:4px;
 }
-.mx .tc-clock{font-size:clamp(52px,10vw,80px);color:var(--yellow)}
-.ru .tc-clock{font-size:clamp(52px,10vw,80px);color:var(--pink)}
+.mx .tc-clock{font-size:clamp(72px,15vw,130px);color:var(--yellow)}
+.ru .tc-clock{font-size:clamp(72px,15vw,130px);color:var(--pink)}
 
 /* Glitch on clock */
 .tc-clock{position:relative}
@@ -413,6 +413,22 @@ document.addEventListener('fullscreenchange',()=>{
   const btn=document.querySelector('.btn-fs');
   btn.textContent=document.fullscreenElement?'⛶ EXIT':'⛶ FULL';
 });
+
+// ── WAKE LOCK ──
+let wakeLock=null;
+async function acquireWakeLock(){
+  if('wakeLock' in navigator){
+    try{
+      wakeLock=await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release',()=>{wakeLock=null});
+    }catch(e){}
+  }
+}
+// Re-acquire if released (e.g. tab goes background then comes back)
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState==='visible'&&wakeLock===null) acquireWakeLock();
+});
+acquireWakeLock();
 
 // ── CLOCKS ──
 function getZoneTime(tz){
