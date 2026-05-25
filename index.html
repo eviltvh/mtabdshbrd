@@ -5,381 +5,392 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>SNCTVM — DUAL TIME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#060608;
-  --surface:#0D0E12;
-  --white:#F0EEE8;
+  --bg:#FAFAF9;
+  --bg2:#F5F5F4;
+  --black:#000000;
+  --white:#FAFAF9;
   --yellow:#E8FF00;
-  --pink:#FF2D55;
-  --blue:#00C8FF;
-  --cyan:#00FFD1;
-  --gray:#4A4A55;
-  --gray-l:#8888A0;
+  --pink:#FF3366;
+  --blue:#00D9FF;
+  --gray:#737373;
+  --gray-l:#D4D4D4;
   --serif:'EB Garamond',Georgia,serif;
-  --mono:'Share Tech Mono','Courier New',monospace;
-  --sans:'Rajdhani',sans-serif;
+  --mono:'JetBrains Mono','Courier New',monospace;
 }
+
 html,body{
   height:100%;width:100%;
   background:var(--bg);
-  color:var(--white);
+  color:var(--black);
   font-family:var(--mono);
   overflow:hidden;
-  cursor:crosshair;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* BG NOISE */
-body::before{
-  content:'';
-  position:fixed;inset:0;
-  background-image:
-    radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,200,255,.04) 0%,transparent 70%),
-    radial-gradient(ellipse 60% 40% at 50% 100%,rgba(255,45,85,.03) 0%,transparent 70%);
-  pointer-events:none;z-index:0;
-}
-
-/* SCANLINES */
-body::after{
-  content:'';position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.08) 3px,rgba(0,0,0,.08) 4px);
-  pointer-events:none;z-index:1;
-}
-
-/* MAIN LAYOUT */
 .shell{
-  position:relative;z-index:2;
   height:100vh;
   display:grid;
-  grid-template-rows:52px 1fr 36px;
-  max-width:800px;
+  grid-template-rows:52px 1fr 38px;
+  max-width:840px;
   margin:0 auto;
-  padding:0 16px;
+  padding:0 24px;
 }
 
 /* ── HEADER ── */
 .hdr{
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid rgba(232,255,0,.2);
-  padding:0 4px;
+  border-bottom:3px solid var(--black);
 }
-.logo-block{display:flex;align-items:center;gap:6px}
-.logo-brkt{color:var(--yellow);font-size:16px;opacity:.6}
-.logo-text{
-  font-family:var(--sans);font-size:20px;font-weight:700;
-  letter-spacing:0.12em;color:var(--white);
-  position:relative;
-}
-.logo-text::after{
-  content:'';position:absolute;bottom:-2px;left:0;width:100%;height:1px;
-  background:linear-gradient(90deg,var(--yellow),transparent);
-}
-.hdr-center{
-  font-size:10px;letter-spacing:.22em;color:var(--gray-l);text-transform:uppercase;
-  display:flex;align-items:center;gap:6px;
-}
-.hdr-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:blink 1.2s step-end infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.logo{display:flex;align-items:center;gap:0}
+.logo-brkt{font-size:18px;font-weight:700;color:var(--black);letter-spacing:0}
+.logo-name{font-family:var(--serif);font-size:22px;letter-spacing:-.02em;color:var(--black)}
+.logo-sep{width:1px;height:18px;background:var(--gray-l);margin:0 14px}
+.logo-sub{font-size:9px;letter-spacing:.22em;color:var(--gray);text-transform:uppercase}
 
-.hdr-right{display:flex;align-items:center;gap:10px}
-.utc{font-size:11px;letter-spacing:.15em;color:var(--gray-l)}
-.utc b{color:var(--white);font-weight:400}
+.hdr-right{display:flex;align-items:center;gap:14px}
+.utc-block{display:flex;flex-direction:column;align-items:flex-end;gap:0}
+.utc-label{font-size:8px;letter-spacing:.2em;color:var(--gray);text-transform:uppercase}
+.utc-val{font-size:12px;letter-spacing:.1em;color:var(--black)}
+
+/* Botón secundario per guía — fondo blanco, borde negro 2px */
 .btn-fs{
-  background:transparent;border:1px solid rgba(232,255,0,.35);
-  color:var(--yellow);padding:4px 10px;
-  font-family:var(--mono);font-size:9px;letter-spacing:.18em;
-  cursor:pointer;text-transform:uppercase;
-  transition:all .2s;
+  background:var(--white);
+  border:2px solid var(--black);
+  color:var(--black);
+  padding:5px 14px;
+  font-family:var(--mono);font-size:9px;
+  letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;
+  transition:background .15s;
+  box-shadow:3px 3px 0 var(--black);
 }
-.btn-fs:hover{background:rgba(232,255,0,.1);border-color:var(--yellow)}
-.btn-fs:active{transform:scale(.96)}
+.btn-fs:hover{background:var(--yellow)}
+.btn-fs:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black)}
 
 /* ── BODY ── */
 .body{
   display:grid;
   grid-template-rows:1fr auto 1fr;
-  gap:0;
-  padding:10px 0 8px;
+  padding:16px 0 12px;
   overflow:hidden;
 }
 
-/* ── TIME CARD ── */
-.tcard{
+/* ── TIME BLOCK ── */
+.tblock{
   display:flex;flex-direction:column;justify-content:center;
-  padding:0 8px;
-  position:relative;
-  overflow:hidden;
+  padding:0 2px;
 }
-.tcard::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
-}
-.tcard.mx::before{background:linear-gradient(180deg,transparent,var(--yellow),transparent)}
-.tcard.ru::before{background:linear-gradient(180deg,transparent,var(--pink),transparent)}
 
-.tc-top{
-  display:flex;align-items:center;justify-content:space-between;
+.tb-eyebrow{
+  display:flex;align-items:center;gap:10px;
   margin-bottom:6px;
 }
-.tc-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gray-l)}
-.tc-badge{
-  font-size:9px;letter-spacing:.18em;padding:2px 8px;font-weight:700;
-  border:1px solid;
+/* Yellow bar accent — 4px exacto según guía */
+.tb-bar{width:4px;height:20px;flex-shrink:0;background:var(--yellow)}
+.ru .tb-bar{background:var(--pink)}
+
+.tb-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gray)}
+
+.tb-tz{
+  margin-left:auto;
+  font-size:9px;letter-spacing:.14em;
+  padding:3px 9px;
+  border:2px solid var(--black);
+  background:var(--bg2);
+  color:var(--black);
 }
-.mx .tc-badge{color:var(--yellow);border-color:rgba(232,255,0,.4)}
-.ru .tc-badge{color:var(--pink);border-color:rgba(255,45,85,.4)}
 
-.tc-city{
-  font-family:var(--serif);font-style:italic;
-  font-size:16px;letter-spacing:-.01em;
-  color:var(--white);opacity:.7;
-  margin-bottom:4px;
+/* Clock — EB Garamond, display grande */
+.tb-clock{
+  font-family:var(--serif);
+  font-weight:400;
+  line-height:.88;
+  letter-spacing:-.03em;
+  color:var(--black);
+  font-size:clamp(80px,15vw,130px);
+  margin-bottom:10px;
 }
 
-.tc-clock{
-  font-family:var(--sans);font-weight:700;
-  line-height:.9;letter-spacing:-.02em;
-  margin-bottom:4px;
+/* Accent underline bajo el reloj */
+.tb-clock-wrap{position:relative;display:inline-block}
+.tb-clock-wrap::after{
+  content:'';
+  display:block;
+  height:3px;width:56px;
+  background:var(--yellow);
+  margin-top:6px;
 }
-.mx .tc-clock{font-size:clamp(72px,15vw,130px);color:var(--yellow)}
-.ru .tc-clock{font-size:clamp(72px,15vw,130px);color:var(--pink)}
+.ru .tb-clock-wrap::after{background:var(--pink)}
 
-/* Glitch on clock */
-.tc-clock{position:relative}
-.tc-clock::before{
-  content:attr(data-t);
-  position:absolute;top:0;left:0;
-  clip-path:polygon(0 0,100% 0,100% 35%,0 35%);
-  animation:gc 5s infinite;
-  opacity:0;
-}
-.mx .tc-clock::before{color:var(--blue)}
-.ru .tc-clock::before{color:var(--cyan)}
-@keyframes gc{0%,91%,100%{opacity:0;transform:translateX(0)}92%{opacity:.8;transform:translateX(-3px)}93%{opacity:.8;transform:translateX(3px)}94%{opacity:0}}
+.tb-meta{display:flex;align-items:center;gap:16px;margin-top:4px}
+.tb-date{font-size:10px;letter-spacing:.15em;color:var(--gray);text-transform:uppercase}
+.tb-diff{margin-left:auto;font-size:9px;letter-spacing:.1em;color:var(--gray)}
 
-.tc-bot{display:flex;align-items:center;justify-content:space-between}
-.tc-date{font-size:10px;letter-spacing:.18em;color:var(--gray-l);text-transform:uppercase}
-.tc-diff{font-size:10px;letter-spacing:.12em;color:var(--gray)}
-
-/* ── MATRIX SECTION ── */
-.matrix-wrap{
-  position:relative;
-  display:flex;flex-direction:column;align-items:center;
+/* ── CENTER ZONE ── */
+.center-zone{
+  padding:8px 0;
+  display:flex;flex-direction:column;
   gap:0;
-  padding:0 4px;
 }
+.sep{width:100%;height:3px;background:var(--black);flex-shrink:0}
 
-/* Divider lines */
-.div-line{
-  width:100%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,200,255,.25) 30%,rgba(0,200,255,.4) 50%,rgba(0,200,255,.25) 70%,transparent);
-  position:relative;
+/* STATS STRIP — cards con borde negro 2px y sombra offset */
+.stats-row{
+  display:flex;align-items:stretch;
+  border-left:3px solid var(--black);
+  border-right:3px solid var(--black);
+  border-bottom:3px solid var(--black);
+  flex-shrink:0;
 }
-.div-line::before{
-  content:'';position:absolute;left:50%;top:-3px;transform:translateX(-50%);
-  width:6px;height:6px;background:var(--blue);border-radius:50%;
-  box-shadow:0 0 8px var(--blue);
-  opacity:.7;
+.stat-item{
+  flex:1;padding:7px 12px;
+  border-right:2px solid var(--black);
+  background:var(--white);
+  display:flex;flex-direction:column;gap:2px;
 }
+.stat-item:last-child{border-right:none}
+.stat-label{font-size:7px;letter-spacing:.22em;color:var(--gray);text-transform:uppercase}
+.stat-val{font-size:15px;font-weight:700;letter-spacing:.02em;color:var(--black)}
+/* Yellow highlight solo en el primero */
+.stat-item:first-child .stat-val{color:var(--black)}
+.stat-item:first-child{background:var(--yellow)}
 
-.matrix-inner{
-  width:100%;
-  position:relative;
-  padding:10px 0 8px;
+/* N8N GRAPH */
+.graph-area{
+  flex:1;display:flex;align-items:center;
+  padding:8px 0 4px;
+  overflow:hidden;
 }
+.graph-svg{width:100%;overflow:visible}
 
-/* Corner markers */
-.corner{position:absolute;width:14px;height:14px}
-.corner.tl{top:10px;left:0;border-top:1px solid var(--blue);border-left:1px solid var(--blue)}
-.corner.tr{top:10px;right:0;border-top:1px solid var(--blue);border-right:1px solid var(--blue)}
-.corner.bl{bottom:8px;left:0;border-bottom:1px solid var(--blue);border-left:1px solid var(--blue)}
-.corner.br{bottom:8px;right:0;border-bottom:1px solid var(--blue);border-right:1px solid var(--blue)}
+/* Node styles — light theme */
+.node-card{fill:var(--white);stroke:var(--black);stroke-width:2}
+.node-card-active{fill:var(--yellow);stroke:var(--black);stroke-width:2}
+.node-card-ru{fill:var(--white);stroke:var(--black);stroke-width:2}
 
-.matrix-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:8px;padding:0 18px;
-}
-.mhdr-label{font-size:9px;letter-spacing:.22em;color:var(--blue);opacity:.7;text-transform:uppercase}
-.mhdr-status{font-size:9px;letter-spacing:.15em;color:var(--cyan);display:flex;align-items:center;gap:5px}
-.mhdr-status span{width:4px;height:4px;border-radius:50%;background:var(--cyan);animation:blink .8s step-end infinite}
+.nt{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.14em;fill:#000;text-transform:uppercase}
+.ns{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:.08em;fill:#737373}
 
-/* CP2077-STYLE GRID */
-.cp-grid{
-  display:grid;
-  gap:3px;
-  padding:0 18px;
-  margin-bottom:8px;
-}
-.cp-cell{
-  height:28px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
-  color:rgba(0,200,255,.45);
-  border:1px solid rgba(0,200,255,.08);
-  background:rgba(0,200,255,.02);
-  transition:all .08s;
-  position:relative;
-  cursor:default;
-  user-select:none;
-}
-.cp-cell.col-active{
-  color:var(--blue);
-  border-color:rgba(0,200,255,.3);
-  background:rgba(0,200,255,.07);
-}
-.cp-cell.row-active{
-  color:rgba(0,200,255,.7);
-  border-color:rgba(0,200,255,.18);
-  background:rgba(0,200,255,.04);
-}
-.cp-cell.selected{
-  color:var(--bg) !important;
-  background:var(--yellow) !important;
-  border-color:var(--yellow) !important;
-  font-weight:700;
-  box-shadow:0 0 12px rgba(232,255,0,.4);
-  z-index:2;
-}
-.cp-cell.path-y{
-  color:rgba(232,255,0,.9) !important;
-  background:rgba(232,255,0,.12) !important;
-  border-color:rgba(232,255,0,.35) !important;
-}
-.cp-cell.path-p{
-  color:rgba(255,45,85,.9) !important;
-  background:rgba(255,45,85,.12) !important;
-  border-color:rgba(255,45,85,.35) !important;
-}
+/* Connector dots */
+.dot-y{fill:var(--yellow);stroke:var(--black);stroke-width:1.5}
+.dot-p{fill:var(--pink);stroke:var(--black);stroke-width:1.5}
+.dot-n{fill:var(--gray-l);stroke:var(--black);stroke-width:1.5}
 
-/* Scan overlay */
-.scan-line{
-  position:absolute;left:18px;right:18px;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,200,255,.5),transparent);
-  pointer-events:none;
-  animation:scanv 4s linear infinite;
-}
-@keyframes scanv{
-  0%{top:10px;opacity:1}
-  90%{opacity:1}
-  100%{top:calc(100% - 8px);opacity:0}
-}
+/* Lines */
+.line-base{fill:none;stroke:#D4D4D4;stroke-width:1.5}
+.line-active{fill:none;stroke:var(--black);stroke-width:1.5}
 
-/* Sequence display */
-.seq-bar{
-  display:flex;align-items:center;justify-content:center;
-  gap:6px;padding:0 18px;
-}
-.seq-slot{
-  width:36px;height:20px;
-  border:1px solid rgba(0,200,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:10px;color:rgba(0,200,255,.4);
-  letter-spacing:.05em;
-  transition:all .15s;
-}
-.seq-slot.filled{
-  border-color:var(--yellow);
-  color:var(--yellow);
-  background:rgba(232,255,0,.08);
-}
-.seq-slot.filled.p{
-  border-color:var(--pink);
-  color:var(--pink);
-  background:rgba(255,45,85,.08);
-}
-.seq-divider{width:10px;height:1px;background:rgba(0,200,255,.15)}
+/* Pulse dashes */
+.pulse-y{fill:none;stroke:var(--black);stroke-width:1.5;stroke-dasharray:5 12}
+.pulse-p{fill:none;stroke:var(--pink);stroke-width:1.5;stroke-dasharray:5 12}
 
 /* ── TICKER ── */
 .ticker{
-  border-top:1px solid rgba(232,255,0,.2);
-  background:rgba(0,0,0,.5);
+  border-top:3px solid var(--black);
+  background:var(--black);
   display:flex;align-items:center;overflow:hidden;
 }
 .t-lbl{
-  background:var(--yellow);color:var(--bg);
-  font-size:9px;font-weight:700;letter-spacing:.2em;
-  padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0;
+  background:var(--yellow);color:var(--black);
+  font-size:9px;font-weight:700;letter-spacing:.22em;
+  padding:0 14px;height:100%;
+  display:flex;align-items:center;
+  border-right:3px solid var(--black);flex-shrink:0;
 }
-.t-track{overflow:hidden;flex:1;height:100%;display:flex;align-items:center}
+.t-track{overflow:hidden;flex:1;display:flex;align-items:center;height:100%}
 .t-inner{
   display:flex;white-space:nowrap;
-  animation:tick 40s linear infinite;
-  font-size:9px;letter-spacing:.15em;color:rgba(232,255,0,.6);
+  animation:tick 44s linear infinite;
+  font-size:9px;font-weight:700;letter-spacing:.15em;color:var(--gray-l);
 }
 @keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.t-sep{color:rgba(232,255,0,.2);margin:0 12px}
+.t-sep{margin:0 14px;color:#333}
 </style>
 </head>
 <body>
-
 <div class="shell">
 
   <!-- HEADER -->
   <header class="hdr">
-    <div class="logo-block">
+    <div class="logo">
       <span class="logo-brkt">[</span>
-      <span class="logo-text">SNCTVM</span>
+      <span class="logo-name">SNCTVM</span>
       <span class="logo-brkt">]</span>
-    </div>
-    <div class="hdr-center">
-      <div class="hdr-dot"></div>
-      <span>SYSTEM ONLINE</span>
+      <div class="logo-sep"></div>
+      <span class="logo-sub">System Dashboard</span>
     </div>
     <div class="hdr-right">
-      <div class="utc"><b id="utc-clk">--:--:--</b> <span style="font-size:9px;color:var(--gray)">UTC</span></div>
-      <button class="btn-fs" onclick="toggleFS()">⛶ FULL</button>
+      <div class="utc-block">
+        <span class="utc-label">UTC</span>
+        <span class="utc-val" id="utc-clk">--:--:--</span>
+      </div>
+      <button class="btn-fs" id="fs-btn" onclick="toggleFS()">⛶ FULL</button>
     </div>
   </header>
 
   <!-- BODY -->
   <div class="body">
 
-    <!-- MX TIME -->
-    <div class="tcard mx">
-      <div class="tc-top">
-        <span class="tc-label">// CIUDAD DE MÉXICO</span>
-        <span class="tc-badge">CDT · UTC−6</span>
+    <!-- MX -->
+    <div class="tblock mx">
+      <div class="tb-eyebrow">
+        <div class="tb-bar"></div>
+        <span class="tb-label">Ciudad de México</span>
+        <span class="tb-tz">CDT · UTC−6</span>
       </div>
-      <div class="tc-city">Ciudad de México</div>
-      <div class="tc-clock" id="mx-clk" data-t="--:--:--">--:--:--</div>
-      <div class="tc-bot">
-        <span class="tc-date" id="mx-date">---</span>
-        <span class="tc-diff" id="mx-diff"></span>
+      <div class="tb-clock-wrap">
+        <div class="tb-clock" id="mx-clk">--:--:--</div>
+      </div>
+      <div class="tb-meta">
+        <span class="tb-date" id="mx-date">---</span>
+        <span class="tb-diff">→ MSK +9H</span>
       </div>
     </div>
 
-    <!-- MATRIX SECTION -->
-    <div class="matrix-wrap">
-      <div class="div-line"></div>
-      <div class="matrix-inner">
-        <div class="corner tl"></div><div class="corner tr"></div>
-        <div class="corner bl"></div><div class="corner br"></div>
-        <div class="scan-line"></div>
+    <!-- CENTER -->
+    <div class="center-zone">
+      <div class="sep"></div>
 
-        <div class="matrix-hdr">
-          <span class="mhdr-label">// BREACH PROTOCOL — MX↔RU LINK</span>
-          <span class="mhdr-status"><span></span>SYNC</span>
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-label">USUARIOS</div>
+          <div class="stat-val" id="s-users">89</div>
         </div>
-
-        <div class="cp-grid" id="cp-grid"></div>
-
-        <div class="seq-bar" id="seq-bar"></div>
+        <div class="stat-item">
+          <div class="stat-label">TXN / HR</div>
+          <div class="stat-val" id="s-txn">1,247</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">LATENCIA</div>
+          <div class="stat-val" id="s-lat">14ms</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">UPTIME</div>
+          <div class="stat-val">99.7%</div>
+        </div>
       </div>
-      <div class="div-line"></div>
+
+      <!-- Graph -->
+      <div class="graph-area">
+        <svg class="graph-svg" viewBox="0 0 780 82" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#D4D4D4" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+            <marker id="ah-b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#000" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+            <marker id="ah-p" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+              <path d="M2 2L8 5L2 8" fill="none" stroke="#FF3366" stroke-width="1.5" stroke-linecap="round"/>
+            </marker>
+          </defs>
+
+          <!-- LINES -->
+          <path class="line-base" d="M140,41 C162,41 170,41 192,41" marker-end="url(#ah)"/>
+          <path class="line-active" d="M298,41 C320,41 328,41 350,41" marker-end="url(#ah-b)"/>
+          <path class="line-active" d="M458,41 C480,41 488,41 510,41" marker-end="url(#ah-b)"/>
+          <path class="line-base" d="M614,41 C636,41 644,41 666,41" marker-end="url(#ah)"/>
+
+          <!-- PULSES -->
+          <path class="pulse-y" d="M298,41 C320,41 328,41 350,41">
+            <animate attributeName="stroke-dashoffset" from="17" to="-17" dur="1.2s" repeatCount="indefinite"/>
+          </path>
+          <path class="pulse-y" d="M458,41 C480,41 488,41 510,41">
+            <animate attributeName="stroke-dashoffset" from="17" to="-17" dur="1.2s" begin=".6s" repeatCount="indefinite"/>
+          </path>
+          <path class="pulse-p" d="M140,41 C162,41 170,41 192,41">
+            <animate attributeName="stroke-dashoffset" from="17" to="-17" dur="2s" repeatCount="indefinite"/>
+          </path>
+          <path class="pulse-p" d="M614,41 C636,41 644,41 666,41">
+            <animate attributeName="stroke-dashoffset" from="17" to="-17" dur="2s" begin="1s" repeatCount="indefinite"/>
+          </path>
+
+          <!-- NODE: MX -->
+          <g transform="translate(12,14)">
+            <rect class="node-card" width="128" height="54" rx="4"/>
+            <!-- yellow bar -->
+            <rect x="0" y="0" width="4" height="54" fill="#E8FF00"/>
+            <!-- hard shadow -->
+            <rect x="3" y="3" width="128" height="54" rx="4" fill="#000" style="z-index:-1"/>
+            <rect class="node-card" width="128" height="54" rx="4"/>
+            <rect x="0" y="0" width="4" height="54" fill="#E8FF00"/>
+            <text x="16" y="24" class="nt">MX NODE</text>
+            <text x="16" y="37" class="ns">Ciudad de México</text>
+            <text x="16" y="49" class="ns">CDT · UTC−6</text>
+            <circle cx="128" cy="27" r="5" class="dot-y"/>
+          </g>
+
+          <!-- NODE: AUTH -->
+          <g transform="translate(192,17)">
+            <rect x="3" y="3" width="106" height="48" rx="4" fill="#000"/>
+            <rect class="node-card" width="106" height="48" rx="4"/>
+            <circle cx="0" cy="24" r="5" class="dot-n"/>
+            <text x="14" y="22" class="nt">AUTH</text>
+            <text x="14" y="35" class="ns">TLS 1.3 · verified</text>
+            <circle cx="106" cy="24" r="5" class="dot-y"/>
+          </g>
+
+          <!-- NODE: SYNC — active, yellow fill -->
+          <g transform="translate(350,10)">
+            <rect x="3" y="3" width="108" height="62" rx="4" fill="#000"/>
+            <rect class="node-card-active" width="108" height="62" rx="4"/>
+            <circle cx="0" cy="31" r="5" class="dot-y"/>
+            <text x="12" y="24" class="nt">MX · RU</text>
+            <text x="12" y="37" class="ns" style="fill:#000">SYNC BRIDGE</text>
+            <text x="12" y="50" class="ns" id="g-status" style="fill:#000">● ONLINE</text>
+            <circle cx="108" cy="31" r="5" class="dot-y"/>
+            <!-- pulse ring -->
+            <circle cx="108" cy="31" r="9" fill="none" stroke="#000" stroke-width="1" opacity=".3">
+              <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".4;0;.4" dur="2s" repeatCount="indefinite"/>
+            </circle>
+          </g>
+
+          <!-- NODE: ESCROW -->
+          <g transform="translate(510,17)">
+            <rect x="3" y="3" width="104" height="48" rx="4" fill="#000"/>
+            <rect class="node-card" width="104" height="48" rx="4"/>
+            <circle cx="0" cy="24" r="5" class="dot-y"/>
+            <text x="14" y="22" class="nt">ESCROW</text>
+            <text x="14" y="35" class="ns">Verificado</text>
+            <circle cx="104" cy="24" r="5" class="dot-n"/>
+          </g>
+
+          <!-- NODE: RU -->
+          <g transform="translate(666,14)">
+            <rect x="3" y="3" width="102" height="54" rx="4" fill="#000"/>
+            <rect class="node-card-ru" width="102" height="54" rx="4"/>
+            <rect x="0" y="0" width="4" height="54" fill="#FF3366"/>
+            <circle cx="0" cy="27" r="5" class="dot-p"/>
+            <text x="16" y="24" class="nt">RU NODE</text>
+            <text x="16" y="37" class="ns">Москва</text>
+            <text x="16" y="49" class="ns">MSK · UTC+3</text>
+          </g>
+
+        </svg>
+      </div>
+
+      <div class="sep"></div>
     </div>
 
-    <!-- RU TIME -->
-    <div class="tcard ru">
-      <div class="tc-top">
-        <span class="tc-label">// МОСКВА</span>
-        <span class="tc-badge">MSK · UTC+3</span>
+    <!-- RU -->
+    <div class="tblock ru">
+      <div class="tb-eyebrow">
+        <div class="tb-bar"></div>
+        <span class="tb-label">Москва</span>
+        <span class="tb-tz">MSK · UTC+3</span>
       </div>
-      <div class="tc-city">Москва</div>
-      <div class="tc-clock" id="ru-clk" data-t="--:--:--">--:--:--</div>
-      <div class="tc-bot">
-        <span class="tc-date" id="ru-date">---</span>
-        <span class="tc-diff" id="ru-diff"></span>
+      <div class="tb-clock-wrap">
+        <div class="tb-clock" id="ru-clk">--:--:--</div>
+      </div>
+      <div class="tb-meta">
+        <span class="tb-date" id="ru-date">---</span>
+        <span class="tb-diff">→ CDT −9H</span>
       </div>
     </div>
 
@@ -401,37 +412,25 @@ const rnd=(a,b)=>Math.floor(Math.random()*(b-a)+a);
 const DAYS=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 const MONTHS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
-// ── FULLSCREEN ──
+// WAKE LOCK
+let wl=null;
+async function acqWL(){
+  if('wakeLock' in navigator){try{wl=await navigator.wakeLock.request('screen')}catch(e){}}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&!wl)acqWL()});
+acqWL();
+
+// FULLSCREEN
 function toggleFS(){
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen().catch(()=>{});
-  } else {
-    document.exitFullscreen();
-  }
+  if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
 }
 document.addEventListener('fullscreenchange',()=>{
-  const btn=document.querySelector('.btn-fs');
-  btn.textContent=document.fullscreenElement?'⛶ EXIT':'⛶ FULL';
+  document.getElementById('fs-btn').textContent=document.fullscreenElement?'⛶ EXIT':'⛶ FULL';
 });
 
-// ── WAKE LOCK ──
-let wakeLock=null;
-async function acquireWakeLock(){
-  if('wakeLock' in navigator){
-    try{
-      wakeLock=await navigator.wakeLock.request('screen');
-      wakeLock.addEventListener('release',()=>{wakeLock=null});
-    }catch(e){}
-  }
-}
-// Re-acquire if released (e.g. tab goes background then comes back)
-document.addEventListener('visibilitychange',()=>{
-  if(document.visibilityState==='visible'&&wakeLock===null) acquireWakeLock();
-});
-acquireWakeLock();
-
-// ── CLOCKS ──
-function getZoneTime(tz){
+// CLOCKS
+function getZone(tz){
   const now=new Date();
   const fmt=new Intl.DateTimeFormat('en-US',{
     timeZone:tz,year:'numeric',month:'2-digit',day:'2-digit',
@@ -441,206 +440,39 @@ function getZoneTime(tz){
   const g=t=>parts.find(p=>p.type===t)?.value;
   const h=parseInt(g('hour'))%24,m=parseInt(g('minute')),s=parseInt(g('second'));
   const y=parseInt(g('year')),mo=parseInt(g('month'))-1,d=parseInt(g('day'));
-  const dow=new Date(y,mo,d).getDay();
-  return{h,m,s,y,mo,d,dow};
+  return{h,m,s,dow:new Date(y,mo,d).getDay(),d,mo,y};
 }
-
 function updateClocks(){
   const now=new Date();
   document.getElementById('utc-clk').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
-
-  const mx=getZoneTime('America/Mexico_City');
-  const ru=getZoneTime('Europe/Moscow');
-
-  const mxStr=`${pad(mx.h)}:${pad(mx.m)}:${pad(mx.s)}`;
-  const ruStr=`${pad(ru.h)}:${pad(ru.m)}:${pad(ru.s)}`;
-
-  const mxEl=document.getElementById('mx-clk');
-  const ruEl=document.getElementById('ru-clk');
-  mxEl.textContent=mxStr;mxEl.setAttribute('data-t',mxStr);
-  ruEl.textContent=ruStr;ruEl.setAttribute('data-t',ruStr);
-
+  const mx=getZone('America/Mexico_City');
+  const ru=getZone('Europe/Moscow');
+  document.getElementById('mx-clk').textContent=`${pad(mx.h)}:${pad(mx.m)}:${pad(mx.s)}`;
   document.getElementById('mx-date').textContent=`${DAYS[mx.dow]} ${pad(mx.d)} ${MONTHS[mx.mo]} ${mx.y}`;
+  document.getElementById('ru-clk').textContent=`${pad(ru.h)}:${pad(ru.m)}:${pad(ru.s)}`;
   document.getElementById('ru-date').textContent=`${DAYS[ru.dow]} ${pad(ru.d)} ${MONTHS[ru.mo]} ${ru.y}`;
-
-  const diff=9; // MSK-CDT = 9h
-  document.getElementById('mx-diff').textContent=`→ MSK +${diff}H`;
-  document.getElementById('ru-diff').textContent=`→ CDT −${diff}H`;
 }
 updateClocks();setInterval(updateClocks,1000);
 
-// ── CP2077 MATRIX ──
-const COLS=8;
-const ROWS=5;
-const HEX=['1C','55','E9','BD','FF','7A','2E','40','C0','F5','88','3D','A1','6B','D4','4F'];
-
-let grid=[];
-let currentCol=-1;
-let currentRow=-1;
-let selectedCells=[];
-let pathCells=[];
-let phase=0; // 0=scanning col, 1=scanning row
-let scanPos=0;
-let highlightTimeout;
-
-function buildGrid(){
-  grid=[];
-  for(let r=0;r<ROWS;r++){
-    const row=[];
-    for(let c=0;c<COLS;c++) row.push(HEX[rnd(0,HEX.length)]);
-    grid.push(row);
-  }
+// METRICS
+let txn=1247,users=89;
+function updateMetrics(){
+  txn=Math.max(800,txn+rnd(-3,9));
+  users=Math.max(40,Math.min(200,users+rnd(-1,3)));
+  document.getElementById('s-users').textContent=users;
+  document.getElementById('s-txn').textContent=txn.toLocaleString();
+  document.getElementById('s-lat').textContent=rnd(8,48)+'ms';
 }
+setInterval(updateMetrics,2000);
 
-function renderGrid(){
-  const container=document.getElementById('cp-grid');
-  container.style.gridTemplateColumns=`repeat(${COLS},1fr)`;
-  container.innerHTML='';
-  for(let r=0;r<ROWS;r++){
-    for(let c=0;c<COLS;c++){
-      const cell=document.createElement('div');
-      cell.className='cp-cell';
-      cell.id=`cell-${r}-${c}`;
-      cell.textContent=grid[r][c];
-      container.appendChild(cell);
-    }
-  }
-}
+// GRAPH blink
+const gs=document.getElementById('g-status');
+setInterval(()=>{gs.textContent=gs.textContent.startsWith('●')?'○ ONLINE':'● ONLINE'},900);
 
-function buildSeqBar(){
-  const bar=document.getElementById('seq-bar');
-  bar.innerHTML='';
-  const seqLen=5;
-  for(let i=0;i<seqLen;i++){
-    const slot=document.createElement('div');
-    slot.className='seq-slot';
-    slot.id=`seq-${i}`;
-    slot.textContent='??';
-    bar.appendChild(slot);
-    if(i<seqLen-1){
-      const div=document.createElement('div');
-      div.className='seq-divider';
-      bar.appendChild(div);
-    }
-  }
-}
-
-function clearHighlights(){
-  document.querySelectorAll('.cp-cell').forEach(c=>{
-    c.className='cp-cell';
-    if(selectedCells.includes(c.id)) c.className='cp-cell selected';
-    else if(pathCells.includes(c.id)){
-      c.className='cp-cell '+((pathCells.indexOf(c.id)%2===0)?'path-y':'path-p');
-    }
-  });
-}
-
-let seqFilled=0;
-let seqColors=[];
-
-function animateMatrix(){
-  buildGrid();
-  renderGrid();
-  buildSeqBar();
-  selectedCells=[];pathCells=[];seqFilled=0;seqColors=[];
-  currentCol=-1;currentRow=-1;
-
-  // Generate a random solution path
-  const path=[];
-  let col=rnd(0,COLS);
-  path.push({r:rnd(0,ROWS),c:col});
-  for(let i=1;i<5;i++){
-    const prev=path[i-1];
-    if(i%2===1){ // change row, same col
-      let nr=rnd(0,ROWS);
-      while(nr===prev.r) nr=rnd(0,ROWS);
-      path.push({r:nr,c:prev.c});
-    } else { // change col, same row
-      let nc=rnd(0,COLS);
-      while(nc===prev.c) nc=rnd(0,COLS);
-      path.push({r:prev.r,c:nc});
-    }
-  }
-
-  let step=0;
-  function doStep(){
-    if(step>=path.length){
-      // Show sequence completion, then reset
-      setTimeout(()=>{
-        // flash all selected
-        document.querySelectorAll('.cp-cell.selected,.cp-cell.path-y,.cp-cell.path-p').forEach(c=>{
-          c.style.transition='all .1s';
-          c.style.opacity='0';
-        });
-        setTimeout(animateMatrix,1200);
-      },2000);
-      return;
-    }
-
-    const p=path[step];
-    const cellId=`cell-${p.r}-${p.c}`;
-
-    // Highlight column or row first
-    clearHighlights();
-    if(step%2===0){
-      // highlight column
-      for(let r=0;r<ROWS;r++){
-        const el=document.getElementById(`cell-${r}-${p.c}`);
-        if(el&&!selectedCells.includes(el.id)&&!pathCells.includes(el.id))
-          el.classList.add('col-active');
-      }
-    } else {
-      // highlight row
-      for(let c=0;c<COLS;c++){
-        const el=document.getElementById(`cell-${p.r}-${c}`);
-        if(el&&!selectedCells.includes(el.id)&&!pathCells.includes(el.id))
-          el.classList.add('row-active');
-      }
-    }
-
-    setTimeout(()=>{
-      clearHighlights();
-      const el=document.getElementById(cellId);
-      if(el){
-        el.className='cp-cell selected';
-        selectedCells.push(cellId);
-
-        // Fill sequence slot
-        if(seqFilled<5){
-          const slot=document.getElementById(`seq-${seqFilled}`);
-          if(slot){
-            slot.textContent=grid[p.r][p.c];
-            slot.className='seq-slot filled'+(seqFilled%2?' p':'');
-          }
-          seqFilled++;
-        }
-      }
-      // Add to path for background display
-      pathCells.push(cellId);
-      step++;
-      setTimeout(doStep,600+rnd(0,300));
-    },500+rnd(0,200));
-  }
-
-  setTimeout(doStep,800);
-}
-
-animateMatrix();
-
-// Background cell randomizer
-setInterval(()=>{
-  const all=document.querySelectorAll('.cp-cell');
-  all.forEach(c=>{
-    if(!c.classList.contains('selected')&&!c.classList.contains('path-y')&&!c.classList.contains('path-p')){
-      if(Math.random()<.05) c.textContent=HEX[rnd(0,HEX.length)];
-    }
-  });
-},300);
-
-// ── TICKER ──
-const tItems=['SNCTVM ONLINE','● MX↔RU SYNC','→ MARKETPLACE ACTIVO','● MEMBERS ONLY','TRANSACCIONES VERIFICADAS','→ ZERO DOWNTIME','● SISTEMA SEGURO','→ ELITE NETWORK','● ENCRIPTADO TLS 1.3','ACCESO CONTROLADO'];
-const all=[...tItems,...tItems];
-document.getElementById('tkr').innerHTML=all.map(t=>`<span>${t}</span><span class="t-sep">//</span>`).join('');
+// TICKER
+const items=['SNCTVM ONLINE','→ MARKETPLACE EXCLUSIVO','MEMBERS ONLY','MX · RU SYNC ACTIVO','TRANSACCIONES VERIFICADAS','→ ZERO DOWNTIME','SISTEMA SEGURO','ELITE NETWORK','→ TLS 1.3 ENCRYPTED','ACCESO CONTROLADO'];
+const all=[...items,...items];
+document.getElementById('tkr').innerHTML=all.map(t=>`<span>${t}</span><span class="t-sep"> // </span>`).join('');
 </script>
 </body>
 </html>
