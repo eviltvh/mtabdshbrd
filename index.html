@@ -2,493 +2,419 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SNCTVM — SYSTEM DASHBOARD</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SNCTVM — DUAL TIME</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;1,400&family=Share+Tech+Mono&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0A0A0A;
-  --white:#FAFAF9;
-  --black:#000000;
+  --bg:#060608;
+  --surface:#0D0E12;
+  --white:#F0EEE8;
   --yellow:#E8FF00;
-  --pink:#FF3366;
-  --blue:#00D9FF;
-  --gray:#737373;
-  --gray-d:#D4D4D4;
+  --pink:#FF2D55;
+  --blue:#00C8FF;
+  --cyan:#00FFD1;
+  --gray:#4A4A55;
+  --gray-l:#8888A0;
   --serif:'EB Garamond',Georgia,serif;
-  --mono:'JetBrains Mono','Courier New',monospace;
+  --mono:'Share Tech Mono','Courier New',monospace;
+  --sans:'Rajdhani',sans-serif;
 }
-html,body{height:100%;background:var(--bg);color:var(--white);font-family:var(--mono);overflow-x:hidden;cursor:crosshair}
-
-/* BOOT OVERLAY */
-#boot{
-  position:fixed;inset:0;background:var(--bg);z-index:9999;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  transition:opacity 0.6s ease;
+html,body{
+  height:100%;width:100%;
+  background:var(--bg);
+  color:var(--white);
+  font-family:var(--mono);
+  overflow:hidden;
+  cursor:crosshair;
 }
-#boot.fade{opacity:0;pointer-events:none}
-#boot-log{font-size:12px;letter-spacing:0.15em;color:var(--yellow);max-width:500px;width:100%;padding:0 24px}
-#boot-log div{margin:3px 0;opacity:0;animation:fade-in 0.1s ease forwards}
-@keyframes fade-in{to{opacity:1}}
-.boot-ok{color:var(--yellow)}
-.boot-sys{color:var(--blue)}
-.boot-warn{color:var(--pink)}
 
-/* MATRIX */
-#mx-canvas{position:fixed;top:0;left:0;width:100%;height:100%;opacity:.06;pointer-events:none;z-index:0}
+/* BG NOISE */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,200,255,.04) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 40% at 50% 100%,rgba(255,45,85,.03) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+}
 
 /* SCANLINES */
-.scanlines{
-  position:fixed;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.12) 2px,rgba(0,0,0,.12) 4px);
-  pointer-events:none;z-index:1
+body::after{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.08) 3px,rgba(0,0,0,.08) 4px);
+  pointer-events:none;z-index:1;
 }
 
-/* VIGNETTE */
-.vignette{
-  position:fixed;inset:0;
-  background:radial-gradient(ellipse at center,transparent 50%,rgba(0,0,0,.7) 100%);
-  pointer-events:none;z-index:1
-}
-
-/* DASHBOARD */
-.dash{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-rows:auto 1fr auto}
-
-/* HEADER */
-.hdr{
-  border-bottom:3px solid var(--yellow);
-  background:rgba(10,10,10,.95);
-  padding:18px 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;overflow:hidden;
-}
-.hdr::before{
-  content:'';position:absolute;top:0;left:0;width:100%;height:100%;
-  background:linear-gradient(90deg,rgba(232,255,0,.03) 0%,transparent 50%);
-  pointer-events:none;
-}
-.logo-wrap{display:flex;align-items:baseline;gap:4px}
-.logo-brk{color:var(--yellow);font-family:var(--mono);font-size:18px;font-weight:700;letter-spacing:0}
-.logo{font-family:var(--serif);font-size:30px;letter-spacing:-0.02em;color:var(--white);position:relative}
-
-/* GLITCH */
-.logo::before,.logo::after{content:attr(data-text);position:absolute;top:0;left:0;width:100%;height:100%}
-.logo::before{color:var(--pink);clip-path:polygon(0 20%,100% 20%,100% 45%,0 45%);animation:g1 4s infinite}
-.logo::after{color:var(--blue);clip-path:polygon(0 55%,100% 55%,100% 80%,0 80%);animation:g2 4s infinite}
-@keyframes g1{0%,88%,100%{transform:translateX(0);opacity:0}90%{transform:translateX(-4px);opacity:1}92%{transform:translateX(4px);opacity:1}94%{transform:translateX(0);opacity:0}}
-@keyframes g2{0%,89%,100%{transform:translateX(0);opacity:0}91%{transform:translateX(4px);opacity:1}93%{transform:translateX(-4px);opacity:1}95%{transform:translateX(0);opacity:0}}
-
-.hdr-sub{font-size:11px;letter-spacing:0.2em;color:var(--gray);margin-left:12px}
-.hdr-right{display:flex;align-items:center;gap:20px}
-
-.status-pill{
-  display:flex;align-items:center;gap:6px;
-  border:2px solid var(--yellow);padding:4px 12px;
-  font-size:10px;letter-spacing:0.2em;color:var(--yellow);text-transform:uppercase;
-}
-.s-dot{width:6px;height:6px;background:var(--yellow);border-radius:50%;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(232,255,0,.5)}50%{opacity:.5;box-shadow:0 0 0 5px rgba(232,255,0,0)}}
-
-.utc-clock{font-size:13px;letter-spacing:0.15em;color:var(--gray-d)}
-.utc-clock span{color:var(--gray);font-size:10px;margin-left:4px;letter-spacing:0.2em}
-
-/* MAIN */
-.main{
-  padding:20px 24px;
+/* MAIN LAYOUT */
+.shell{
+  position:relative;z-index:2;
+  height:100vh;
   display:grid;
-  grid-template-columns:1fr 1fr 320px;
-  grid-template-rows:auto 1fr;
-  gap:16px;
+  grid-template-rows:52px 1fr 36px;
+  max-width:800px;
+  margin:0 auto;
+  padding:0 16px;
 }
 
-/* TIME CARDS */
+/* ── HEADER ── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(232,255,0,.2);
+  padding:0 4px;
+}
+.logo-block{display:flex;align-items:center;gap:6px}
+.logo-brkt{color:var(--yellow);font-size:16px;opacity:.6}
+.logo-text{
+  font-family:var(--sans);font-size:20px;font-weight:700;
+  letter-spacing:0.12em;color:var(--white);
+  position:relative;
+}
+.logo-text::after{
+  content:'';position:absolute;bottom:-2px;left:0;width:100%;height:1px;
+  background:linear-gradient(90deg,var(--yellow),transparent);
+}
+.hdr-center{
+  font-size:10px;letter-spacing:.22em;color:var(--gray-l);text-transform:uppercase;
+  display:flex;align-items:center;gap:6px;
+}
+.hdr-dot{width:5px;height:5px;border-radius:50%;background:var(--cyan);animation:blink 1.2s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.hdr-right{display:flex;align-items:center;gap:10px}
+.utc{font-size:11px;letter-spacing:.15em;color:var(--gray-l)}
+.utc b{color:var(--white);font-weight:400}
+.btn-fs{
+  background:transparent;border:1px solid rgba(232,255,0,.35);
+  color:var(--yellow);padding:4px 10px;
+  font-family:var(--mono);font-size:9px;letter-spacing:.18em;
+  cursor:pointer;text-transform:uppercase;
+  transition:all .2s;
+}
+.btn-fs:hover{background:rgba(232,255,0,.1);border-color:var(--yellow)}
+.btn-fs:active{transform:scale(.96)}
+
+/* ── BODY ── */
+.body{
+  display:grid;
+  grid-template-rows:1fr auto 1fr;
+  gap:0;
+  padding:10px 0 8px;
+  overflow:hidden;
+}
+
+/* ── TIME CARD ── */
 .tcard{
-  background:rgba(10,10,10,.9);
-  border:3px solid var(--white);
-  position:relative;padding:24px 20px 20px;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:0 8px;
+  position:relative;
+  overflow:hidden;
 }
-.tcard.mx{border-color:var(--yellow);box-shadow:6px 6px 0 var(--yellow)}
-.tcard.ru{border-color:var(--pink);box-shadow:6px 6px 0 var(--pink)}
-
-/* Corner brackets */
-.cbr{position:absolute;width:16px;height:16px}
-.cbr.tl{top:-3px;left:-3px;border-top:3px solid var(--blue);border-left:3px solid var(--blue)}
-.cbr.tr{top:-3px;right:-3px;border-top:3px solid var(--blue);border-right:3px solid var(--blue)}
-.cbr.bl{bottom:-3px;left:-3px;border-bottom:3px solid var(--blue);border-left:3px solid var(--blue)}
-.cbr.br{bottom:-3px;right:-3px;border-bottom:3px solid var(--blue);border-right:3px solid var(--blue)}
-
-/* Scan line */
-.sline{
-  position:absolute;left:0;width:100%;height:2px;
-  pointer-events:none;z-index:2;
+.tcard::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;
 }
-.mx .sline{background:linear-gradient(90deg,transparent,rgba(232,255,0,.6),transparent);animation:scan 3.5s linear infinite}
-.ru .sline{background:linear-gradient(90deg,transparent,rgba(255,51,102,.6),transparent);animation:scan 3.5s linear infinite 1.75s}
-@keyframes scan{0%{top:-2px}100%{top:100%}}
+.tcard.mx::before{background:linear-gradient(180deg,transparent,var(--yellow),transparent)}
+.tcard.ru::before{background:linear-gradient(180deg,transparent,var(--pink),transparent)}
 
-.tz-badge{
-  position:absolute;top:16px;right:16px;
-  font-size:10px;font-weight:700;letter-spacing:0.2em;padding:3px 9px;
-  border:2px solid var(--black);
+.tc-top{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:6px;
 }
-.mx .tz-badge{background:var(--yellow);color:var(--black)}
-.ru .tz-badge{background:var(--pink);color:var(--black)}
-
-.tcard-label{
-  font-size:10px;letter-spacing:0.25em;color:var(--gray);
-  text-transform:uppercase;margin-bottom:6px;
-  display:flex;align-items:center;gap:8px;
+.tc-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--gray-l)}
+.tc-badge{
+  font-size:9px;letter-spacing:.18em;padding:2px 8px;font-weight:700;
+  border:1px solid;
 }
-.tcard-label::before{content:'';display:inline-block;width:3px;height:14px}
-.mx .tcard-label::before{background:var(--yellow)}
-.ru .tcard-label::before{background:var(--pink)}
+.mx .tc-badge{color:var(--yellow);border-color:rgba(232,255,0,.4)}
+.ru .tc-badge{color:var(--pink);border-color:rgba(255,45,85,.4)}
 
-.city{font-family:var(--serif);font-size:26px;letter-spacing:-0.02em;margin-bottom:14px}
-
-.clock{font-size:60px;font-weight:700;letter-spacing:-0.02em;line-height:1;margin-bottom:6px}
-.mx .clock{color:var(--yellow)}
-.ru .clock{color:var(--pink)}
-
-.tdate{font-size:11px;letter-spacing:0.15em;color:var(--gray);text-transform:uppercase}
-.tdiff{position:absolute;bottom:16px;right:16px;font-size:10px;color:var(--gray);letter-spacing:0.1em}
-
-/* Heartbeat line */
-.hbeat{
-  position:absolute;bottom:0;left:0;width:100%;height:3px;overflow:hidden;
+.tc-city{
+  font-family:var(--serif);font-style:italic;
+  font-size:22px;letter-spacing:-.01em;
+  color:var(--white);opacity:.7;
+  margin-bottom:8px;
 }
-.hbeat-inner{
-  height:100%;width:200%;
-  animation:hbeat 2s linear infinite;
-}
-.mx .hbeat-inner{background:repeating-linear-gradient(90deg,transparent 0,transparent 20px,var(--yellow) 20px,var(--yellow) 22px,transparent 22px,transparent 30px,rgba(232,255,0,.3) 30px,rgba(232,255,0,.3) 32px,transparent 32px,transparent 50px)}
-.ru .hbeat-inner{background:repeating-linear-gradient(90deg,transparent 0,transparent 20px,var(--pink) 20px,var(--pink) 22px,transparent 22px,transparent 30px,rgba(255,51,102,.3) 30px,rgba(255,51,102,.3) 32px,transparent 32px,transparent 50px)}
-@keyframes hbeat{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 
-/* METRICS PANEL */
-.metrics{
-  grid-row:1/3;grid-column:3;
-  background:rgba(10,10,10,.9);
-  border:3px solid var(--white);
-  display:flex;flex-direction:column;overflow:hidden;
+.tc-clock{
+  font-family:var(--sans);font-weight:700;
+  line-height:1;letter-spacing:-.01em;
+  margin-bottom:6px;
 }
-.panel-hdr{
-  border-bottom:2px solid var(--white);
-  padding:10px 16px;display:flex;align-items:center;justify-content:space-between;
-  background:rgba(255,255,255,.04);
-  flex-shrink:0;
+.mx .tc-clock{font-size:clamp(52px,10vw,80px);color:var(--yellow)}
+.ru .tc-clock{font-size:clamp(52px,10vw,80px);color:var(--pink)}
+
+/* Glitch on clock */
+.tc-clock{position:relative}
+.tc-clock::before{
+  content:attr(data-t);
+  position:absolute;top:0;left:0;
+  clip-path:polygon(0 0,100% 0,100% 35%,0 35%);
+  animation:gc 5s infinite;
+  opacity:0;
 }
-.panel-title{font-size:10px;letter-spacing:0.25em;text-transform:uppercase;display:flex;align-items:center;gap:6px}
-.pt-acc{color:var(--yellow)}
-.blink{animation:blk 1s step-end infinite}
-@keyframes blk{0%,100%{opacity:1}50%{opacity:0}}
-.live-dot{width:5px;height:5px;background:var(--pink);border-radius:50%;animation:pulse 1s infinite}
+.mx .tc-clock::before{color:var(--blue)}
+.ru .tc-clock::before{color:var(--cyan)}
+@keyframes gc{0%,91%,100%{opacity:0;transform:translateX(0)}92%{opacity:.8;transform:translateX(-3px)}93%{opacity:.8;transform:translateX(3px)}94%{opacity:0}}
 
-.mitem{
-  padding:12px 16px;
-  border-bottom:1px dashed rgba(255,255,255,.12);
-  flex-shrink:0;
+.tc-bot{display:flex;align-items:center;justify-content:space-between}
+.tc-date{font-size:10px;letter-spacing:.18em;color:var(--gray-l);text-transform:uppercase}
+.tc-diff{font-size:10px;letter-spacing:.12em;color:var(--gray)}
+
+/* ── MATRIX SECTION ── */
+.matrix-wrap{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;
+  gap:0;
+  padding:0 4px;
 }
-.mitem:last-child{border-bottom:none;flex:1;display:flex;align-items:center;justify-content:center}
-.mname{font-size:9px;letter-spacing:0.2em;color:var(--gray);text-transform:uppercase;margin-bottom:4px}
-.mval{font-size:22px;font-weight:700;line-height:1;margin-bottom:6px}
-.mval.y{color:var(--yellow)}
-.mval.p{color:var(--pink)}
-.mval.b{color:var(--blue)}
 
-.mbar-bg{width:100%;height:3px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15)}
-.mbar-fill{height:100%;transition:width 0.8s ease}
-.mbar-fill.y{background:var(--yellow)}
-.mbar-fill.p{background:var(--pink)}
-.mbar-fill.b{background:var(--blue)}
-
-.net-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;padding:8px 16px 10px}
-.ndot{width:8px;height:8px;background:rgba(255,255,255,.08);transition:background .15s,transform .15s}
-.ndot.on-y{background:var(--yellow);transform:scale(1.4)}
-.ndot.on-p{background:var(--pink);transform:scale(1.4)}
-.ndot.on-b{background:var(--blue);transform:scale(1.4)}
-
-.bar-strip{display:flex;align-items:flex-end;gap:2px;height:44px;padding:0 16px 10px}
-.bscol{flex:1;min-width:4px;transition:height .4s ease}
-.bscol.y{background:var(--yellow)}
-.bscol.p{background:var(--pink)}
-
-/* Ring */
-.ring-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
-.ring-label{
-  position:absolute;text-align:center;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+/* Divider lines */
+.div-line{
+  width:100%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,.25) 30%,rgba(0,200,255,.4) 50%,rgba(0,200,255,.25) 70%,transparent);
+  position:relative;
 }
-.ring-pct{font-size:18px;font-weight:700;color:var(--yellow)}
-.ring-sub{font-size:8px;letter-spacing:0.15em;color:var(--gray);margin-top:2px}
-.ring-svg{transform:rotate(-90deg)}
+.div-line::before{
+  content:'';position:absolute;left:50%;top:-3px;transform:translateX(-50%);
+  width:6px;height:6px;background:var(--blue);border-radius:50%;
+  box-shadow:0 0 8px var(--blue);
+  opacity:.7;
+}
 
-/* LOG */
-.log{
-  grid-column:1/3;
-  background:rgba(10,10,10,.9);
-  border:3px solid var(--white);
-  display:flex;flex-direction:column;overflow:hidden;min-height:180px;
+.matrix-inner{
+  width:100%;
+  position:relative;
+  padding:10px 0 8px;
 }
-.log-body{
-  flex:1;overflow:hidden;padding:10px 16px;
-  display:flex;flex-direction:column;gap:1px;
-}
-.lentry{
-  font-size:11px;line-height:1.7;
-  display:flex;gap:10px;
-  opacity:0;animation:fade-in .25s ease forwards;
-  white-space:nowrap;overflow:hidden;
-}
-.lts{color:var(--blue);min-width:72px;flex-shrink:0;font-size:10px}
-.ltype{min-width:56px;flex-shrink:0;font-size:10px;font-weight:700}
-.ltype.ok{color:var(--yellow)}
-.ltype.warn{color:var(--pink)}
-.ltype.info{color:var(--blue)}
-.ltype.sys{color:var(--gray-d)}
-.lmsg{color:var(--white);font-size:10px;overflow:hidden;text-overflow:ellipsis}
 
-/* TICKER */
+/* Corner markers */
+.corner{position:absolute;width:14px;height:14px}
+.corner.tl{top:10px;left:0;border-top:1px solid var(--blue);border-left:1px solid var(--blue)}
+.corner.tr{top:10px;right:0;border-top:1px solid var(--blue);border-right:1px solid var(--blue)}
+.corner.bl{bottom:8px;left:0;border-bottom:1px solid var(--blue);border-left:1px solid var(--blue)}
+.corner.br{bottom:8px;right:0;border-bottom:1px solid var(--blue);border-right:1px solid var(--blue)}
+
+.matrix-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:8px;padding:0 18px;
+}
+.mhdr-label{font-size:9px;letter-spacing:.22em;color:var(--blue);opacity:.7;text-transform:uppercase}
+.mhdr-status{font-size:9px;letter-spacing:.15em;color:var(--cyan);display:flex;align-items:center;gap:5px}
+.mhdr-status span{width:4px;height:4px;border-radius:50%;background:var(--cyan);animation:blink .8s step-end infinite}
+
+/* CP2077-STYLE GRID */
+.cp-grid{
+  display:grid;
+  gap:3px;
+  padding:0 18px;
+  margin-bottom:8px;
+}
+.cp-cell{
+  height:28px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  color:rgba(0,200,255,.45);
+  border:1px solid rgba(0,200,255,.08);
+  background:rgba(0,200,255,.02);
+  transition:all .08s;
+  position:relative;
+  cursor:default;
+  user-select:none;
+}
+.cp-cell.col-active{
+  color:var(--blue);
+  border-color:rgba(0,200,255,.3);
+  background:rgba(0,200,255,.07);
+}
+.cp-cell.row-active{
+  color:rgba(0,200,255,.7);
+  border-color:rgba(0,200,255,.18);
+  background:rgba(0,200,255,.04);
+}
+.cp-cell.selected{
+  color:var(--bg) !important;
+  background:var(--yellow) !important;
+  border-color:var(--yellow) !important;
+  font-weight:700;
+  box-shadow:0 0 12px rgba(232,255,0,.4);
+  z-index:2;
+}
+.cp-cell.path-y{
+  color:rgba(232,255,0,.9) !important;
+  background:rgba(232,255,0,.12) !important;
+  border-color:rgba(232,255,0,.35) !important;
+}
+.cp-cell.path-p{
+  color:rgba(255,45,85,.9) !important;
+  background:rgba(255,45,85,.12) !important;
+  border-color:rgba(255,45,85,.35) !important;
+}
+
+/* Scan overlay */
+.scan-line{
+  position:absolute;left:18px;right:18px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(0,200,255,.5),transparent);
+  pointer-events:none;
+  animation:scanv 4s linear infinite;
+}
+@keyframes scanv{
+  0%{top:10px;opacity:1}
+  90%{opacity:1}
+  100%{top:calc(100% - 8px);opacity:0}
+}
+
+/* Sequence display */
+.seq-bar{
+  display:flex;align-items:center;justify-content:center;
+  gap:6px;padding:0 18px;
+}
+.seq-slot{
+  width:36px;height:20px;
+  border:1px solid rgba(0,200,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:rgba(0,200,255,.4);
+  letter-spacing:.05em;
+  transition:all .15s;
+}
+.seq-slot.filled{
+  border-color:var(--yellow);
+  color:var(--yellow);
+  background:rgba(232,255,0,.08);
+}
+.seq-slot.filled.p{
+  border-color:var(--pink);
+  color:var(--pink);
+  background:rgba(255,45,85,.08);
+}
+.seq-divider{width:10px;height:1px;background:rgba(0,200,255,.15)}
+
+/* ── TICKER ── */
 .ticker{
-  border-top:3px solid var(--yellow);
-  background:var(--yellow);height:38px;
+  border-top:1px solid rgba(232,255,0,.2);
+  background:rgba(0,0,0,.5);
   display:flex;align-items:center;overflow:hidden;
 }
-.ticker-lbl{
-  background:var(--black);color:var(--yellow);
-  font-size:10px;font-weight:700;letter-spacing:0.2em;
-  padding:0 14px;height:100%;display:flex;align-items:center;
-  border-right:3px solid var(--black);flex-shrink:0;white-space:nowrap;
+.t-lbl{
+  background:var(--yellow);color:var(--bg);
+  font-size:9px;font-weight:700;letter-spacing:.2em;
+  padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0;
 }
-.ticker-track{overflow:hidden;flex:1;height:100%;display:flex;align-items:center}
-.ticker-inner{
-  display:flex;gap:0;
-  animation:tick 50s linear infinite;
-  font-size:10px;font-weight:700;letter-spacing:0.15em;color:var(--black);
-  white-space:nowrap;
+.t-track{overflow:hidden;flex:1;height:100%;display:flex;align-items:center}
+.t-inner{
+  display:flex;white-space:nowrap;
+  animation:tick 40s linear infinite;
+  font-size:9px;letter-spacing:.15em;color:rgba(232,255,0,.6);
 }
 @keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.tsep{color:rgba(0,0,0,.3);margin:0 16px}
-
-/* RESPONSIVE */
-@media(max-width:1100px){
-  .main{grid-template-columns:1fr 1fr;grid-template-rows:auto auto auto}
-  .metrics{grid-column:1/3;grid-row:3}
-  .log{grid-column:1/3}
-}
-@media(max-width:680px){
-  .main{grid-template-columns:1fr;padding:12px}
-  .tcard.mx,.tcard.ru,.metrics,.log{grid-column:1}
-  .clock{font-size:48px}
-  .hdr-sub{display:none}
-}
+.t-sep{color:rgba(232,255,0,.2);margin:0 12px}
 </style>
 </head>
 <body>
 
-<!-- BOOT SCREEN -->
-<div id="boot">
-  <div id="boot-log"></div>
-</div>
-
-<canvas id="mx-canvas"></canvas>
-<div class="scanlines"></div>
-<div class="vignette"></div>
-
-<div class="dash">
+<div class="shell">
 
   <!-- HEADER -->
   <header class="hdr">
-    <div style="display:flex;align-items:baseline;gap:0">
-      <div class="logo-wrap">
-        <span class="logo-brk">[</span>
-        <span class="logo glitch" data-text="SNCTVM">SNCTVM</span>
-        <span class="logo-brk">]</span>
-      </div>
-      <span class="hdr-sub">SYSTEM DASHBOARD v2.4.1</span>
+    <div class="logo-block">
+      <span class="logo-brkt">[</span>
+      <span class="logo-text">SNCTVM</span>
+      <span class="logo-brkt">]</span>
+    </div>
+    <div class="hdr-center">
+      <div class="hdr-dot"></div>
+      <span>SYSTEM ONLINE</span>
     </div>
     <div class="hdr-right">
-      <div class="status-pill"><div class="s-dot"></div>ONLINE</div>
-      <div class="utc-clock"><span id="hdr-clock">--:--:--</span><span>UTC</span></div>
+      <div class="utc"><b id="utc-clk">--:--:--</b> <span style="font-size:9px;color:var(--gray)">UTC</span></div>
+      <button class="btn-fs" onclick="toggleFS()">⛶ FULL</button>
     </div>
   </header>
 
-  <!-- MAIN GRID -->
-  <main class="main">
+  <!-- BODY -->
+  <div class="body">
 
-    <!-- MEXICO CARD -->
+    <!-- MX TIME -->
     <div class="tcard mx">
-      <div class="cbr tl"></div><div class="cbr tr"></div>
-      <div class="cbr bl"></div><div class="cbr br"></div>
-      <div class="sline"></div>
-      <div class="tz-badge">CDT / UTC−6</div>
-      <div class="tcard-label">Zona Horaria</div>
-      <div class="city">Ciudad de México</div>
-      <div class="clock" id="mx-clock">--:--:--</div>
-      <div class="tdate" id="mx-date">---</div>
-      <div class="tdiff" id="mx-diff"></div>
-      <div class="hbeat"><div class="hbeat-inner"></div></div>
+      <div class="tc-top">
+        <span class="tc-label">// CIUDAD DE MÉXICO</span>
+        <span class="tc-badge">CDT · UTC−6</span>
+      </div>
+      <div class="tc-city">Ciudad de México</div>
+      <div class="tc-clock" id="mx-clk" data-t="--:--:--">--:--:--</div>
+      <div class="tc-bot">
+        <span class="tc-date" id="mx-date">---</span>
+        <span class="tc-diff" id="mx-diff"></span>
+      </div>
     </div>
 
-    <!-- MOSCOW CARD -->
+    <!-- MATRIX SECTION -->
+    <div class="matrix-wrap">
+      <div class="div-line"></div>
+      <div class="matrix-inner">
+        <div class="corner tl"></div><div class="corner tr"></div>
+        <div class="corner bl"></div><div class="corner br"></div>
+        <div class="scan-line"></div>
+
+        <div class="matrix-hdr">
+          <span class="mhdr-label">// BREACH PROTOCOL — MX↔RU LINK</span>
+          <span class="mhdr-status"><span></span>SYNC</span>
+        </div>
+
+        <div class="cp-grid" id="cp-grid"></div>
+
+        <div class="seq-bar" id="seq-bar"></div>
+      </div>
+      <div class="div-line"></div>
+    </div>
+
+    <!-- RU TIME -->
     <div class="tcard ru">
-      <div class="cbr tl"></div><div class="cbr tr"></div>
-      <div class="cbr bl"></div><div class="cbr br"></div>
-      <div class="sline"></div>
-      <div class="tz-badge">MSK / UTC+3</div>
-      <div class="tcard-label">Zona Horaria</div>
-      <div class="city">Москва</div>
-      <div class="clock" id="ru-clock">--:--:--</div>
-      <div class="tdate" id="ru-date">---</div>
-      <div class="tdiff" id="ru-diff"></div>
-      <div class="hbeat"><div class="hbeat-inner"></div></div>
-    </div>
-
-    <!-- METRICS PANEL -->
-    <div class="metrics">
-      <div class="panel-hdr">
-        <span class="panel-title">[<span class="pt-acc">SYS</span>] MÉTRICAS</span>
-        <div style="display:flex;align-items:center;gap:6px">
-          <div class="live-dot"></div>
-          <span style="font-size:9px;letter-spacing:0.15em;color:var(--gray)">LIVE</span>
-        </div>
+      <div class="tc-top">
+        <span class="tc-label">// МОСКВА</span>
+        <span class="tc-badge">MSK · UTC+3</span>
       </div>
-
-      <div style="padding:8px 0 0;border-bottom:1px dashed rgba(255,255,255,.12)">
-        <div style="font-size:9px;letter-spacing:0.2em;color:var(--gray);text-transform:uppercase;padding:0 16px 4px">ACTIVIDAD DE RED</div>
-        <div class="net-grid" id="net-grid"></div>
-      </div>
-
-      <div class="mitem">
-        <div class="mname">TRANSACCIONES / HR</div>
-        <div class="mval y" id="txn-val">0</div>
-        <div class="bar-strip" id="bar-strip"></div>
-      </div>
-
-      <div class="mitem">
-        <div class="mname">USUARIOS ACTIVOS</div>
-        <div class="mval p" id="user-val">0</div>
-        <div class="mbar-bg"><div class="mbar-fill p" id="user-bar" style="width:0%"></div></div>
-      </div>
-
-      <div class="mitem">
-        <div class="mname">LATENCIA (MS)</div>
-        <div class="mval b" id="lat-val">--</div>
-        <div class="mbar-bg"><div class="mbar-fill b" id="lat-bar" style="width:0%"></div></div>
-      </div>
-
-      <div class="mitem">
-        <div class="mname">INTEGRIDAD DEL SISTEMA</div>
-        <div class="mval" id="int-val">99.9%</div>
-        <div class="mbar-bg"><div class="mbar-fill y" id="int-bar" style="width:99%"></div></div>
-      </div>
-
-      <div class="mitem">
-        <div class="ring-wrap">
-          <svg class="ring-svg" width="90" height="90" viewBox="0 0 90 90">
-            <circle r="36" cx="45" cy="45" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/>
-            <circle r="36" cx="45" cy="45" fill="none" stroke="#E8FF00" stroke-width="4"
-              stroke-dasharray="226.2" id="ring-fill" stroke-dashoffset="226.2" stroke-linecap="butt"/>
-          </svg>
-          <div class="ring-label">
-            <div class="ring-pct" id="ring-pct">0%</div>
-            <div class="ring-sub">UPTIME</div>
-          </div>
-        </div>
+      <div class="tc-city">Москва</div>
+      <div class="tc-clock" id="ru-clk" data-t="--:--:--">--:--:--</div>
+      <div class="tc-bot">
+        <span class="tc-date" id="ru-date">---</span>
+        <span class="tc-diff" id="ru-diff"></span>
       </div>
     </div>
 
-    <!-- LOG -->
-    <div class="log">
-      <div class="panel-hdr">
-        <span class="panel-title">[<span class="pt-acc">LOG</span>] FEED DE ACTIVIDAD</span>
-        <span style="font-size:9px;color:var(--pink);letter-spacing:0.15em">● <span class="blink">TRANSMITIENDO</span></span>
-      </div>
-      <div class="log-body" id="log-body"></div>
-    </div>
-
-  </main>
+  </div>
 
   <!-- TICKER -->
   <div class="ticker">
-    <div class="ticker-lbl">▶ SNCTVM</div>
-    <div class="ticker-track">
-      <div class="ticker-inner" id="ticker"></div>
+    <div class="t-lbl">▶ SNCTVM</div>
+    <div class="t-track">
+      <div class="t-inner" id="tkr"></div>
     </div>
   </div>
 
 </div>
 
 <script>
-// ─── UTILS ───────────────────────────────────────
-const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
 const rnd=(a,b)=>Math.floor(Math.random()*(b-a)+a);
 const DAYS=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'];
 const MONTHS=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
 
-// ─── BOOT SEQUENCE ───────────────────────────────
-const bootLines=[
-  {cls:'boot-sys', txt:'SNCTVM KERNEL v2.4.1 LOADING...'},
-  {cls:'boot-ok',  txt:'[OK] CORE SYSTEMS INITIALIZED'},
-  {cls:'boot-sys', txt:'ESTABLISHING ENCRYPTED TUNNEL...'},
-  {cls:'boot-ok',  txt:'[OK] TLS 1.3 HANDSHAKE COMPLETE'},
-  {cls:'boot-sys', txt:'SYNCING TIMEZONE NODES MX ↔ RU...'},
-  {cls:'boot-ok',  txt:'[OK] NTP SYNC — DRIFT: +0.002ms'},
-  {cls:'boot-sys', txt:'LOADING MARKETPLACE MODULES...'},
-  {cls:'boot-ok',  txt:'[OK] MEMBERS DB CONNECTED — 89 ACTIVOS'},
-  {cls:'boot-warn',txt:'[WARN] UNAUTHORIZED ACCESS ATTEMPTS: 17 (BLOCKED)'},
-  {cls:'boot-ok',  txt:'[OK] FIREWALL RULES ENFORCED'},
-  {cls:'boot-sys', txt:'INITIALIZING LIVE TELEMETRY...'},
-  {cls:'boot-ok',  txt:'[OK] ALL SYSTEMS NOMINAL'},
-  {cls:'boot-sys', txt:'WELCOME TO SNCTVM — MEMBERS ONLY ▊'},
-];
-const bootLog=$('boot-log');
-bootLines.forEach((l,i)=>{
-  setTimeout(()=>{
-    const d=document.createElement('div');
-    d.className=l.cls;d.textContent=l.txt;
-    d.style.animationDelay='0s';
-    bootLog.appendChild(d);
-  },i*150);
-});
-setTimeout(()=>{
-  const boot=$('boot');
-  boot.classList.add('fade');
-  setTimeout(()=>boot.style.display='none',700);
-  // Animate ring after boot
-  setTimeout(()=>{
-    $('ring-fill').style.strokeDashoffset=226.2*(1-0.997);
-    $('ring-pct').textContent='99.7%';
-  },300);
-},bootLines.length*150+400);
-
-// ─── MATRIX RAIN ─────────────────────────────────
-const c=document.getElementById('mx-canvas');
-const cx=c.getContext('2d');
-const chars='01アイウエオSNCTVMサシスセソ0123456789ABCDEFabcdef→←※#$%&';
-let cols,drops;
-function resz(){c.width=window.innerWidth;c.height=window.innerHeight;cols=Math.floor(c.width/14);drops=Array(cols).fill(1)}
-resz();window.addEventListener('resize',resz);
-function drawMatrix(){
-  cx.fillStyle='rgba(10,10,10,.05)';
-  cx.fillRect(0,0,c.width,c.height);
-  const ch=chars[rnd(0,chars.length)];
-  cx.font='13px JetBrains Mono,monospace';
-  for(let i=0;i<drops.length;i++){
-    const char=chars[rnd(0,chars.length)];
-    cx.globalAlpha=Math.random()*.7+.2;
-    cx.fillStyle=i%6===0?'#FF3366':i%9===0?'#00D9FF':'#E8FF00';
-    cx.fillText(char,i*14,drops[i]*14);
-    if(drops[i]*14>c.height&&Math.random()>.975)drops[i]=0;
-    drops[i]++;
+// ── FULLSCREEN ──
+function toggleFS(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
   }
-  cx.globalAlpha=1;
 }
-setInterval(drawMatrix,55);
+document.addEventListener('fullscreenchange',()=>{
+  const btn=document.querySelector('.btn-fs');
+  btn.textContent=document.fullscreenElement?'⛶ EXIT':'⛶ FULL';
+});
 
-// ─── CLOCKS ──────────────────────────────────────
+// ── CLOCKS ──
 function getZoneTime(tz){
   const now=new Date();
   const fmt=new Intl.DateTimeFormat('en-US',{
@@ -505,126 +431,200 @@ function getZoneTime(tz){
 
 function updateClocks(){
   const now=new Date();
-  $('hdr-clock').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
-  
+  document.getElementById('utc-clk').textContent=`${pad(now.getUTCHours())}:${pad(now.getUTCMinutes())}:${pad(now.getUTCSeconds())}`;
+
   const mx=getZoneTime('America/Mexico_City');
   const ru=getZoneTime('Europe/Moscow');
-  
-  $('mx-clock').textContent=`${pad(mx.h)}:${pad(mx.m)}:${pad(mx.s)}`;
-  $('mx-date').textContent=`${DAYS[mx.dow]} ${pad(mx.d)} ${MONTHS[mx.mo]} ${mx.y}`;
-  
-  $('ru-clock').textContent=`${pad(ru.h)}:${pad(ru.m)}:${pad(ru.s)}`;
-  $('ru-date').textContent=`${DAYS[ru.dow]} ${pad(ru.d)} ${MONTHS[ru.mo]} ${ru.y}`;
 
-  // Offset difference
-  const mxOff=-6, ruOff=3, diff=ruOff-mxOff;
-  $('mx-diff').textContent=`→ MSK +${diff}H`;
-  $('ru-diff').textContent=`→ MX -${diff}H`;
+  const mxStr=`${pad(mx.h)}:${pad(mx.m)}:${pad(mx.s)}`;
+  const ruStr=`${pad(ru.h)}:${pad(ru.m)}:${pad(ru.s)}`;
+
+  const mxEl=document.getElementById('mx-clk');
+  const ruEl=document.getElementById('ru-clk');
+  mxEl.textContent=mxStr;mxEl.setAttribute('data-t',mxStr);
+  ruEl.textContent=ruStr;ruEl.setAttribute('data-t',ruStr);
+
+  document.getElementById('mx-date').textContent=`${DAYS[mx.dow]} ${pad(mx.d)} ${MONTHS[mx.mo]} ${mx.y}`;
+  document.getElementById('ru-date').textContent=`${DAYS[ru.dow]} ${pad(ru.d)} ${MONTHS[ru.mo]} ${ru.y}`;
+
+  const diff=9; // MSK-CDT = 9h
+  document.getElementById('mx-diff').textContent=`→ MSK +${diff}H`;
+  document.getElementById('ru-diff').textContent=`→ CDT −${diff}H`;
 }
 updateClocks();setInterval(updateClocks,1000);
 
-// ─── METRICS ─────────────────────────────────────
-let txn=1247,users=89;
+// ── CP2077 MATRIX ──
+const COLS=8;
+const ROWS=5;
+const HEX=['1C','55','E9','BD','FF','7A','2E','40','C0','F5','88','3D','A1','6B','D4','4F'];
 
-// Net grid
-const ng=$('net-grid');
-for(let i=0;i<48;i++){const d=document.createElement('div');d.className='ndot';ng.appendChild(d)}
+let grid=[];
+let currentCol=-1;
+let currentRow=-1;
+let selectedCells=[];
+let pathCells=[];
+let phase=0; // 0=scanning col, 1=scanning row
+let scanPos=0;
+let highlightTimeout;
 
-// Bar strip
-const bs=$('bar-strip');
-for(let i=0;i<24;i++){
-  const b=document.createElement('div');
-  b.className='bscol '+(i%4===0?'p':'y');
-  b.style.height=rnd(4,44)+'px';
-  bs.appendChild(b);
-}
-
-function updateMetrics(){
-  txn+=rnd(-2,9);if(txn<800)txn=800;
-  $('txn-val').textContent=txn.toLocaleString();
-  
-  // Scroll bars
-  const bars=bs.querySelectorAll('.bscol');
-  for(let i=0;i<bars.length-1;i++)bars[i].style.height=bars[i+1].style.height;
-  bars[bars.length-1].style.height=rnd(4,44)+'px';
-
-  users=Math.max(40,Math.min(200,users+rnd(-2,4)));
-  $('user-val').textContent=users;
-  $('user-bar').style.width=Math.min(100,users/2)+'%';
-
-  const lat=rnd(8,55);
-  $('lat-val').textContent=lat;
-  $('lat-bar').style.width=Math.min(100,(lat/60)*100)+'%';
-
-  // Net dots
-  const dots=ng.querySelectorAll('.ndot');
-  dots.forEach(d=>d.className='ndot');
-  for(let i=0;i<rnd(3,12);i++){
-    const idx=rnd(0,dots.length);
-    const cls=['on-y','on-p','on-b'][rnd(0,3)];
-    dots[idx].className='ndot '+cls;
+function buildGrid(){
+  grid=[];
+  for(let r=0;r<ROWS;r++){
+    const row=[];
+    for(let c=0;c<COLS;c++) row.push(HEX[rnd(0,HEX.length)]);
+    grid.push(row);
   }
 }
-setInterval(updateMetrics,700);updateMetrics();
 
-// ─── ACTIVITY LOG ────────────────────────────────
-const logs=[
-  {t:'ok', msgs:[
-    'Transacción #TXN-{id} completada — $USD {amt}',
-    'Usuario #{uid} autenticado — Ciudad de México',
-    'Pago verificado → wallet actualizado',
-    'Listing #{lid} publicado — vendor #{vid}',
-    'Escrow liberado → transacción #TXN-{id}',
-  ]},
-  {t:'info', msgs:[
-    'API heartbeat → 200 OK — {lat}ms',
-    'Nuevo miembro registrado — onboarding iniciado',
-    'Sync MX↔RU completado — 0 errores',
-    'Cache invalidado — serving fresh data',
-    'Rate check passed — #{uid}',
-  ]},
-  {t:'warn', msgs:[
-    'Acceso fallido — IP {ip} bloqueada',
-    'Anomalía detectada → rev. manual #TXN-{id}',
-    'Rate limit alcanzado — throttling aplicado',
-    'Sesión expirada — usuario #{uid}',
-  ]},
-  {t:'sys', msgs:[
-    'Health check → DB:OK API:OK CDN:OK',
-    'Load balancer — 3 nodos activos',
-    'SNCTVM core v2.4.1 — todos los servicios UP',
-    'Snapshot backup creado',
-  ]},
-];
-const logBody=$('log-body');
-function mkEntry(){
-  const g=logs[rnd(0,logs.length)];
-  let msg=g.msgs[rnd(0,g.msgs.length)];
-  msg=msg.replace('{id}',rnd(10000,99999)).replace('{uid}',rnd(1000,9999))
-    .replace('{lid}',rnd(1000,9999)).replace('{vid}',rnd(100,999))
-    .replace('{amt}',(Math.random()*800+20).toFixed(2))
-    .replace('{lat}',rnd(8,55))
-    .replace('{ip}',`${rnd(10,255)}.${rnd(0,255)}.x.x`);
-  const now=new Date();
-  const e=document.createElement('div');e.className='lentry';
-  e.innerHTML=`<span class="lts">${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}</span><span class="ltype ${g.t}">[${g.t.toUpperCase()}]</span><span class="lmsg">${msg}</span>`;
-  logBody.insertBefore(e,logBody.firstChild);
-  while(logBody.children.length>12)logBody.removeChild(logBody.lastChild);
+function renderGrid(){
+  const container=document.getElementById('cp-grid');
+  container.style.gridTemplateColumns=`repeat(${COLS},1fr)`;
+  container.innerHTML='';
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const cell=document.createElement('div');
+      cell.className='cp-cell';
+      cell.id=`cell-${r}-${c}`;
+      cell.textContent=grid[r][c];
+      container.appendChild(cell);
+    }
+  }
 }
-for(let i=0;i<8;i++)mkEntry();
-setInterval(mkEntry,1400);
 
-// ─── TICKER ──────────────────────────────────────
-const tickItems=[
-  'SNCTVM ONLINE','● MARKETPLACE EXCLUSIVO','→ MEMBERS ONLY',
-  '● MX/RU SYNC ACTIVO','TRANSACCIONES VERIFICADAS','→ ZERO DOWNTIME',
-  '● SISTEMA SEGURO','NUEVOS LISTINGS DISPONIBLES','→ ÚNETE AHORA',
-  '● EXCLUSIVO','VENDEDORES VERIFICADOS','→ COMPRA CON CONFIANZA',
-  '● ENCRIPTADO TLS 1.3','ACCESO CONTROLADO','→ ELITE NETWORK',
-];
-const tkr=$('ticker');
-const all=[...tickItems,...tickItems];
-tkr.innerHTML=all.map(t=>`<span>${t}</span><span class="tsep"> // </span>`).join('');
+function buildSeqBar(){
+  const bar=document.getElementById('seq-bar');
+  bar.innerHTML='';
+  const seqLen=5;
+  for(let i=0;i<seqLen;i++){
+    const slot=document.createElement('div');
+    slot.className='seq-slot';
+    slot.id=`seq-${i}`;
+    slot.textContent='??';
+    bar.appendChild(slot);
+    if(i<seqLen-1){
+      const div=document.createElement('div');
+      div.className='seq-divider';
+      bar.appendChild(div);
+    }
+  }
+}
+
+function clearHighlights(){
+  document.querySelectorAll('.cp-cell').forEach(c=>{
+    c.className='cp-cell';
+    if(selectedCells.includes(c.id)) c.className='cp-cell selected';
+    else if(pathCells.includes(c.id)){
+      c.className='cp-cell '+((pathCells.indexOf(c.id)%2===0)?'path-y':'path-p');
+    }
+  });
+}
+
+let seqFilled=0;
+let seqColors=[];
+
+function animateMatrix(){
+  buildGrid();
+  renderGrid();
+  buildSeqBar();
+  selectedCells=[];pathCells=[];seqFilled=0;seqColors=[];
+  currentCol=-1;currentRow=-1;
+
+  // Generate a random solution path
+  const path=[];
+  let col=rnd(0,COLS);
+  path.push({r:rnd(0,ROWS),c:col});
+  for(let i=1;i<5;i++){
+    const prev=path[i-1];
+    if(i%2===1){ // change row, same col
+      let nr=rnd(0,ROWS);
+      while(nr===prev.r) nr=rnd(0,ROWS);
+      path.push({r:nr,c:prev.c});
+    } else { // change col, same row
+      let nc=rnd(0,COLS);
+      while(nc===prev.c) nc=rnd(0,COLS);
+      path.push({r:prev.r,c:nc});
+    }
+  }
+
+  let step=0;
+  function doStep(){
+    if(step>=path.length){
+      // Show sequence completion, then reset
+      setTimeout(()=>{
+        // flash all selected
+        document.querySelectorAll('.cp-cell.selected,.cp-cell.path-y,.cp-cell.path-p').forEach(c=>{
+          c.style.transition='all .1s';
+          c.style.opacity='0';
+        });
+        setTimeout(animateMatrix,1200);
+      },2000);
+      return;
+    }
+
+    const p=path[step];
+    const cellId=`cell-${p.r}-${p.c}`;
+
+    // Highlight column or row first
+    clearHighlights();
+    if(step%2===0){
+      // highlight column
+      for(let r=0;r<ROWS;r++){
+        const el=document.getElementById(`cell-${r}-${p.c}`);
+        if(el&&!selectedCells.includes(el.id)&&!pathCells.includes(el.id))
+          el.classList.add('col-active');
+      }
+    } else {
+      // highlight row
+      for(let c=0;c<COLS;c++){
+        const el=document.getElementById(`cell-${p.r}-${c}`);
+        if(el&&!selectedCells.includes(el.id)&&!pathCells.includes(el.id))
+          el.classList.add('row-active');
+      }
+    }
+
+    setTimeout(()=>{
+      clearHighlights();
+      const el=document.getElementById(cellId);
+      if(el){
+        el.className='cp-cell selected';
+        selectedCells.push(cellId);
+
+        // Fill sequence slot
+        if(seqFilled<5){
+          const slot=document.getElementById(`seq-${seqFilled}`);
+          if(slot){
+            slot.textContent=grid[p.r][p.c];
+            slot.className='seq-slot filled'+(seqFilled%2?' p':'');
+          }
+          seqFilled++;
+        }
+      }
+      // Add to path for background display
+      pathCells.push(cellId);
+      step++;
+      setTimeout(doStep,600+rnd(0,300));
+    },500+rnd(0,200));
+  }
+
+  setTimeout(doStep,800);
+}
+
+animateMatrix();
+
+// Background cell randomizer
+setInterval(()=>{
+  const all=document.querySelectorAll('.cp-cell');
+  all.forEach(c=>{
+    if(!c.classList.contains('selected')&&!c.classList.contains('path-y')&&!c.classList.contains('path-p')){
+      if(Math.random()<.05) c.textContent=HEX[rnd(0,HEX.length)];
+    }
+  });
+},300);
+
+// ── TICKER ──
+const tItems=['SNCTVM ONLINE','● MX↔RU SYNC','→ MARKETPLACE ACTIVO','● MEMBERS ONLY','TRANSACCIONES VERIFICADAS','→ ZERO DOWNTIME','● SISTEMA SEGURO','→ ELITE NETWORK','● ENCRIPTADO TLS 1.3','ACCESO CONTROLADO'];
+const all=[...tItems,...tItems];
+document.getElementById('tkr').innerHTML=all.map(t=>`<span>${t}</span><span class="t-sep">//</span>`).join('');
 </script>
 </body>
 </html>
